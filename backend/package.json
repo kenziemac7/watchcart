@@ -12,7 +12,8 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "node-cron": "^3.0.3",
-    "playwright": "^1.44.0",
-    "resend": "^4.0.0"
+    "@browserbasehq/stagehand": "latest",
+    "resend": "^4.0.0",
+    "zod": "^3.23.0"
   }
 }
