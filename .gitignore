@@ -1,0 +1,16 @@
+# Environment
+backend/.env
+
+# Database
+backend/watchcart.db
+backend/watchcart.db-shm
+backend/watchcart.db-wal
+
+# Dependencies
+backend/node_modules/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log

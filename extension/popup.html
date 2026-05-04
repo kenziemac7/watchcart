@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WatchCart</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <span class="logo">🛒</span>
+      <span class="header-title">WatchCart</span>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="refresh-btn" title="Refresh watchlist">↻</button>
+    </div>
+  </header>
+
+  <!-- Shopping site banner (shown only when on a product page) -->
+  <div class="site-banner hidden" id="site-banner">
+    <span>Looks like a shopping page —</span>
+    <button class="banner-add-btn" id="banner-add-btn">Add to WatchCart</button>
+  </div>
+
+  <!-- View: Watchlist -->
+  <div id="view-list">
+    <div class="loading hidden" id="list-loading">
+      <div class="spinner"></div>
+      <span>Loading…</span>
+    </div>
+
+    <div class="error-msg hidden" id="list-error"></div>
+
+    <ul class="item-list" id="item-list"></ul>
+
+    <div class="empty-state hidden" id="empty-state">
+      <div class="empty-icon">📦</div>
+      <p>No items yet.</p>
+      <p class="empty-sub">Browse to a product page and click<br><strong>Add to WatchCart</strong>.</p>
+    </div>
+  </div>
+
+  <!-- View: Add item form -->
+  <div id="view-add" class="hidden">
+    <div class="form-header">
+      <button class="back-btn" id="back-btn">← Back</button>
+      <span class="form-title">Watch This Item</span>
+    </div>
+
+    <form id="add-form" class="add-form">
+      <label class="field">
+        <span class="field-label">Product URL</span>
+        <input
+          type="url"
+          id="input-url"
+          class="field-input"
+          placeholder="https://..."
+          required
+        />
+      </label>
+
+      <label class="field">
+        <span class="field-label">Alert me when price drops to ($)</span>
+        <input
+          type="number"
+          id="input-price"
+          class="field-input"
+          placeholder="e.g. 79.99"
+          step="0.01"
+          min="0.01"
+          required
+        />
+      </label>
+
+      <label class="field">
+        <span class="field-label">Size <span class="optional">(optional)</span></span>
+        <input
+          type="text"
+          id="input-size"
+          class="field-input"
+          placeholder="e.g. 10.5, M, XL"
+        />
+      </label>
+
+      <div class="form-error hidden" id="form-error"></div>
+
+      <button type="submit" class="submit-btn" id="submit-btn">
+        <span id="submit-label">Watch This Item</span>
+        <span id="submit-spinner" class="btn-spinner hidden"></span>
+      </button>
+    </form>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
