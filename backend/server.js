@@ -50,6 +50,11 @@ app.post('/items', async (req, res) => {
     return res.status(400).json({ error: 'target_price must be a positive number' });
   }
 
+  const itemCount = db.prepare('SELECT COUNT(*) as count FROM watched_items').get().count;
+  if (itemCount >= 20) {
+    return res.status(400).json({ error: 'Limit reached: WatchCart supports a maximum of 20 watched items. Remove an item before adding a new one.' });
+  }
+
   console.log(`[server] Scraping new item: ${parsedUrl.href}`);
 
   let scraped;

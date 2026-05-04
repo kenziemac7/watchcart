@@ -166,6 +166,12 @@ const { available } = await stagehand.extract(
 
 ---
 
+## Personal use disclaimer
+
+WatchCart is intended for personal use only — monitoring a handful of items for your own shopping. Please be respectful of retailers' servers and ToS. This is not intended for mass scraping, bulk monitoring, or commercial use.
+
+---
+
 ## Known limitations
 
 - **Heavy bot-protection sites** (Cloudflare-gated stores, etc.) may still block even with residential proxies.
