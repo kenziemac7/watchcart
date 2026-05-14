@@ -1,6 +1,6 @@
-require('dotenv').config();
-const { Stagehand } = require('@browserbasehq/stagehand');
-const { z } = require('zod');
+require("dotenv").config();
+const { Stagehand } = require("@browserbasehq/stagehand");
+const { z } = require("zod");
 
 // Common close-button selectors across major retail sites.
 // Playwright tries these first (fast + deterministic) before falling back
@@ -37,23 +37,25 @@ async function dismissPopups(page, stagehand) {
   }
 
   // Nothing matched — hand off to Stagehand to visually find it
-  await stagehand.act(
-    'If a popup, modal, email signup form, or overlay is covering the page, close it by clicking the X, close, or "No thanks" button.'
-  ).catch(() => {});
+  await stagehand
+    .act(
+      'If a popup, modal, email signup form, or overlay is covering the page, close it by clicking the X, close, or "No thanks" button.',
+    )
+    .catch(() => {});
 }
 
-async function scrapeProduct(url, targetSize = null) {
+async function extractProduct(url, targetSize = null) {
   const stagehand = new Stagehand({
-    env: 'BROWSERBASE',
-    model: 'anthropic/claude-sonnet-4-6',
+    env: "BROWSERBASE",
+    model: "anthropic/claude-sonnet-4-6",
     browserbaseSessionCreateParams: {
       proxies: true,
       browserSettings: {
         fingerprint: {
-          browsers: ['chrome'],
-          devices: ['desktop'],
-          locales: ['en-US'],
-          operatingSystems: ['macos'],
+          browsers: ["chrome"],
+          devices: ["desktop"],
+          locales: ["en-US"],
+          operatingSystems: ["macos"],
         },
       },
     },
@@ -63,23 +65,30 @@ async function scrapeProduct(url, targetSize = null) {
     await stagehand.init();
     const page = stagehand.context.pages()[0];
 
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeoutMs: 30_000 });
-    await page.waitForLoadState('networkidle', { timeoutMs: 10_000 }).catch(() => {});
+    await page.goto(url, { waitUntil: "domcontentloaded", timeoutMs: 30_000 });
+    await page
+      .waitForLoadState("networkidle", { timeoutMs: 10_000 })
+      .catch(() => {});
 
     // og:image lives in <head> and is unaffected by overlays — grab it now
-    const ogImage = await page.evaluate(() => {
-      const el = document.querySelector('meta[property="og:image"]');
-      return el ? el.getAttribute('content') : null;
-    }).catch(() => null);
+    const ogImage = await page
+      .evaluate(() => {
+        const el = document.querySelector('meta[property="og:image"]');
+        return el ? el.getAttribute("content") : null;
+      })
+      .catch(() => null);
 
     await dismissPopups(page, stagehand);
 
     const product = await stagehand.extract(
-      'Extract the product name and current displayed price.',
+      "Extract the product name and current displayed price.",
       z.object({
-        productName: z.string().describe('full name or title of the product'),
-        price: z.number().nullable().describe('current price in USD as a plain number, e.g. 59.95'),
-      })
+        productName: z.string().describe("full name or title of the product"),
+        price: z
+          .number()
+          .nullable()
+          .describe("current price in USD as a plain number, e.g. 59.95"),
+      }),
     );
 
     let sizeAvailable = true;
@@ -89,25 +98,32 @@ async function scrapeProduct(url, targetSize = null) {
 
         const { available } = await stagehand.extract(
           `After selecting size ${targetSize}, is this size available to add to the cart? ` +
-          'Return false if the page shows "Sold Out", "Out of Stock", "Unavailable", or a waitlist prompt.',
+            'Return false if the page shows "Sold Out", "Out of Stock", "Unavailable", or a waitlist prompt.',
           z.object({
-            available: z.boolean().describe('true if the size is in stock and can be added to cart'),
-          })
+            available: z
+              .boolean()
+              .describe(
+                "true if the size is in stock and can be added to cart",
+              ),
+          }),
         );
 
         sizeAvailable = available;
       } catch (err) {
-        console.log(`[scraper] Size check failed for "${targetSize}": ${err.message}`);
+        console.log(
+          `[scraper] Size check failed for "${targetSize}": ${err.message}`,
+        );
         sizeAvailable = true;
       }
     }
 
     return {
-      price:          product.price != null ? parseFloat(product.price.toFixed(2)) : null,
-      productName:    product.productName ?? 'Unknown Product',
-      imageUrl:       ogImage,
+      price:
+        product.price != null ? parseFloat(product.price.toFixed(2)) : null,
+      productName: product.productName ?? "Unknown Product",
+      imageUrl: ogImage,
       sizeAvailable,
-      siteName:       new URL(url).hostname.replace('www.', ''),
+      siteName: new URL(url).hostname.replace("www.", ""),
       availableSizes: [],
     };
   } finally {
@@ -115,4 +131,4 @@ async function scrapeProduct(url, targetSize = null) {
   }
 }
 
-module.exports = { scrapeProduct };
+module.exports = { extractProduct };
